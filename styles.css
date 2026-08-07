@@ -1,0 +1,390 @@
+/* SowiMotor wireframes — mid-fi sketch styles
+   Direction: sporty/adrenaline meets local/friendly Badalona shop.
+   System: Anton (headline, sporty caps) + IBM Plex Sans (body, neutral)
+           + IBM Plex Mono (placeholders) + Caveat (handwritten notes).
+*/
+
+:root {
+  --ink: #ededea;
+  --ink-2: #9a978e;
+  --paper: #16161a;
+  --paper-2: #1f1f24;
+  --line: #ededea;
+  --muted: #2c2c32;
+  --accent: #ff6a1a;             /* SowiMotor orange — keep loud */
+  --accent-2: oklch(0.78 0.14 85);
+  --grid: rgba(255,255,255,0.05);
+  --sketch: 1.5px;
+}
+body { background: #0d0d10; }
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; background: #efece4; color: var(--ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+
+/* ── wireframe primitives ─────────────────────────────────────── */
+
+.wf {
+  width: 1280px; height: 1600px;
+  background: var(--paper);
+  position: relative;
+  overflow: hidden;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  color: var(--ink);
+}
+
+.wf-tall { height: 2200px; }
+.wf-short { height: 1100px; }
+
+.headline {
+  font-family: 'Anton', 'Bebas Neue', Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.italic { font-style: italic; transform: skewX(-6deg); display: inline-block; }
+.italic-tight { font-style: italic; letter-spacing: -0.01em; }
+.stencil {
+  font-family: 'Anton', sans-serif;
+  -webkit-text-stroke: 2px var(--ink);
+  color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.note { font-family: 'Caveat', 'Bradley Hand', cursive; color: var(--accent); }
+
+/* sketchy placeholder image */
+.ph {
+  position: relative;
+  background: repeating-linear-gradient(
+    135deg,
+    #1f1f24 0 8px,
+    #28282e 8px 16px
+  );
+  border: var(--sketch) solid var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+.ph::before, .ph::after {
+  content: ''; position: absolute; inset: 0;
+  border: 1px dashed rgba(255,255,255,0.15);
+  pointer-events: none;
+  margin: 4px;
+}
+.ph .ph-x {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top right, transparent calc(50% - 0.5px), rgba(255,255,255,0.12) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(to top left, transparent calc(50% - 0.5px), rgba(255,255,255,0.12) 50%, transparent calc(50% + 0.5px));
+  pointer-events: none;
+}
+.ph .ph-label {
+  position: relative; z-index: 1;
+  background: var(--paper);
+  padding: 3px 8px;
+  border: 1px solid var(--ink);
+}
+
+/* sketchy box / button */
+.box { border: var(--sketch) solid var(--ink); background: var(--paper); }
+.box-fill { background: var(--ink); color: var(--paper); border: var(--sketch) solid var(--ink); }
+.box-fill * { color: inherit; }
+.box-accent { background: var(--accent); color: #0d0d10; border: var(--sketch) solid var(--ink); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  border: var(--sketch) solid var(--ink);
+  background: var(--paper);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.btn-fill { background: var(--ink); color: var(--paper); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-lg { padding: 14px 22px; font-size: 14px; }
+
+/* nav */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 40px;
+  border-bottom: var(--sketch) solid var(--ink);
+  background: var(--paper);
+}
+.nav-logo {
+  font-family: 'Anton', sans-serif;
+  font-size: 26px; letter-spacing: 0.02em;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo-mark {
+  width: 36px; height: 36px;
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  display: grid; place-items: center;
+  color: #0d0d10; font-family: 'Anton', sans-serif; font-size: 20px;
+  font-style: italic;
+  box-shadow: 2px 2px 0 #0d0d10;
+}
+.nav-logo > span:last-child { color: var(--ink); }
+.nav-logo > span:last-child .logo-orange { color: var(--accent); }
+.nav-links {
+  display: flex; gap: 28px;
+  font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.06em; font-weight: 500;
+}
+.nav-links span { padding-bottom: 4px; cursor: pointer; }
+.nav-links span.active { border-bottom: 2px solid var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+
+.lang-toggle {
+  display: inline-flex; border: var(--sketch) solid var(--ink); overflow: hidden;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+}
+.lang-toggle button {
+  padding: 6px 10px; border: 0; background: var(--paper);
+  font: inherit; cursor: pointer;
+}
+.lang-toggle button.on { background: var(--ink); color: var(--paper); }
+
+/* sketchy underline / strikethrough annotations */
+.scribble {
+  position: absolute; pointer-events: none; color: var(--accent); opacity: 0.9;
+  font-family: 'Caveat', cursive; font-size: 18px;
+}
+.arrow-curl { font-family: 'Caveat', cursive; color: var(--accent); }
+
+/* footer */
+.foot {
+  border-top: var(--sketch) solid var(--ink);
+  padding: 28px 40px;
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 24px;
+  font-size: 12px; color: var(--ink-2);
+  background: var(--paper-2);
+}
+.foot h5 {
+  font-family: 'Anton', sans-serif; letter-spacing: 0.04em;
+  font-size: 14px; margin: 0 0 8px; color: var(--ink); text-transform: uppercase;
+}
+.foot p { margin: 4px 0; }
+
+/* sections */
+.sect-tag {
+  display: inline-block; font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-2);
+  border: 1px solid var(--ink); padding: 3px 8px;
+  background: var(--paper);
+}
+
+/* dashed grid bg */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* whatsapp green accent (used as a chip) */
+.chip-wa {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: var(--sketch) solid var(--ink);
+  background: oklch(0.85 0.13 145);
+  padding: 4px 8px; font-size: 12px; font-weight: 600;
+}
+
+/* small star row */
+.stars { letter-spacing: 2px; color: var(--accent); }
+
+/* bike card */
+.card {
+  border: var(--sketch) solid var(--ink);
+  background: var(--paper);
+  display: flex; flex-direction: column;
+}
+.card .ph { flex: 0 0 auto; }
+.card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.card-title { font-family: 'Anton', sans-serif; font-size: 18px; letter-spacing: 0.02em; }
+.card-meta { font-size: 11px; color: var(--ink-2); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; }
+.card-price { font-family: 'Anton', sans-serif; font-size: 22px; color: var(--accent); }
+
+/* filter row */
+.filter-row {
+  display: flex; flex-direction: column; gap: 10px;
+  border: var(--sketch) solid var(--ink);
+  padding: 14px;
+}
+.filter-row h4 {
+  margin: 0; font-family: 'Anton', sans-serif;
+  font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.filter-chip {
+  display: inline-block; font-size: 11px;
+  border: 1px solid var(--ink); padding: 4px 8px; margin: 2px;
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
+}
+.filter-chip.on { background: var(--ink); color: var(--paper); }
+
+/* sketchy diagonal racing stripe */
+.stripe {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(
+      -28deg,
+      transparent 0 28px,
+      var(--accent) 28px 30px,
+      transparent 30px 60px
+    );
+  opacity: 0.18; pointer-events: none;
+}
+
+/* underline scribble (svg-less squiggly) */
+.under {
+  background-image: linear-gradient(transparent 92%, var(--accent) 92% 96%, transparent 96%);
+}
+
+/* small hand annotations */
+.handnote {
+  position: absolute;
+  font-family: 'Caveat', cursive;
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1.05;
+  max-width: 220px;
+}
+.handnote::before {
+  content: ""; position: absolute; left: -18px; top: 8px;
+  width: 14px; height: 14px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(35deg);
+}
+
+/* sketchy bullet */
+.bullet { display: flex; align-items: flex-start; gap: 8px; }
+.bullet::before {
+  content: "—"; color: var(--accent); font-weight: 700;
+}
+
+/* utility */
+.row { display: flex; }
+.col { display: flex; flex-direction: column; }
+.gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; } .gap-24 { gap: 24px; } .gap-32 { gap: 32px; }
+.p-40 { padding: 40px; } .p-32 { padding: 32px; } .p-24 { padding: 24px; }
+.flex-1 { flex: 1; }
+.center { display: flex; align-items: center; justify-content: center; }
+
+/* tweak: sketchy mode toggles dashed everywhere */
+.wf[data-sketchy="high"] .box,
+.wf[data-sketchy="high"] .card,
+.wf[data-sketchy="high"] .btn,
+.wf[data-sketchy="high"] .nav,
+.wf[data-sketchy="high"] .ph,
+.wf[data-sketchy="high"] .filter-row,
+.wf[data-sketchy="high"] .lang-toggle {
+  border-style: dashed !important;
+}
+.wf[data-sketchy="high"] .headline { transform: rotate(-0.4deg); }
+
+/* ── BADASS / TRACK MODE ───────────────────────────────────────── */
+/* Full black, white & neon-red. Brutal italic headlines, motorsport feel. */
+.wf[data-mode="track"] {
+  --ink: #f5f3ee;
+  --ink-2: #b8b5ad;
+  --paper: #0c0c0d;
+  --paper-2: #161617;
+  --line: #f5f3ee;
+  --muted: #2a2a2c;
+  --grid: rgba(255,255,255,0.05);
+  background: var(--paper); color: var(--ink);
+}
+.wf[data-mode="track"] .ph {
+  background: repeating-linear-gradient(
+    135deg,
+    #1a1a1d 0 8px,
+    #232326 8px 16px
+  );
+  color: #888;
+}
+.wf[data-mode="track"] .ph::before { border-color: rgba(255,255,255,0.18); }
+.wf[data-mode="track"] .ph .ph-x { background:
+    linear-gradient(to top right, transparent calc(50% - 0.5px), rgba(255,255,255,0.12) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(to top left, transparent calc(50% - 0.5px), rgba(255,255,255,0.12) 50%, transparent calc(50% + 0.5px));
+}
+.wf[data-mode="track"] .ph .ph-label { background: var(--paper); border-color: var(--ink); color: var(--ink); }
+.wf[data-mode="track"] .stencil { -webkit-text-stroke-color: var(--ink); }
+.wf[data-mode="track"] .nav { background: var(--paper); }
+.wf[data-mode="track"] .foot { background: #060607; color: #888; }
+.wf[data-mode="track"] .foot h5 { color: var(--ink); }
+.wf[data-mode="track"] .nav-logo-mark { background: var(--accent); }
+.wf[data-mode="track"] .box-fill { background: var(--ink); color: var(--paper); }
+.wf[data-mode="track"] .btn-fill { background: var(--ink); color: var(--paper); }
+
+/* motorsport chips and numbers */
+.plate {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Anton', sans-serif;
+  background: var(--ink); color: var(--paper);
+  padding: 4px 10px; letter-spacing: 0.06em;
+  border: 2px solid var(--ink);
+  text-transform: uppercase;
+}
+.plate-num {
+  font-family: 'Anton', sans-serif;
+  font-size: 56px; line-height: 0.85;
+  display: inline-block; padding: 6px 14px;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+}
+
+/* gritty noise overlay */
+.noise::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(0,0,0,0.18) 1px, transparent 1px);
+  background-size: 3px 3px; opacity: 0.4; mix-blend-mode: multiply;
+}
+
+/* diagonal slash divider */
+.slash-row {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Anton', sans-serif; text-transform: uppercase;
+}
+.slash-row::before, .slash-row::after {
+  content: ""; flex: 1; height: 2px; background: var(--accent);
+}
+
+/* checkered flag strip */
+.flag {
+  height: 14px;
+  background-image:
+    linear-gradient(45deg, var(--ink) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--ink) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+}
+
+/* big speed stat */
+.stat-num {
+  font-family: 'Anton', sans-serif;
+  font-size: 88px; line-height: 0.85;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+/* tweak: density */
+.wf[data-density="loose"] .card-body { padding: 18px 20px; }
+.wf[data-density="tight"] .card-body { padding: 8px 10px; }
