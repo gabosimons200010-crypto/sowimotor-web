@@ -1,0 +1,109 @@
+/* SowiMotor — admin panel. Builds on hifi.css tokens (--bg, --ink, --orange, --line...). */
+
+.admin-shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+.admin-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px; border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.admin-topbar .nav-logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.admin-topbar .mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; background: var(--orange); color: #0a0a0c;
+  font-family: 'Anton', sans-serif; border-radius: 4px;
+}
+.admin-topbar .orange { color: var(--orange); }
+.admin-topbar-right { display: flex; align-items: center; gap: 14px; }
+.admin-user-email { font-size: 12px; color: var(--ink-3); font-family: 'IBM Plex Mono', monospace; }
+
+.admin-main { flex: 1; padding: 32px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+.admin-header-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; gap: 16px; flex-wrap: wrap;
+}
+.admin-header-row h1 {
+  font-family: 'Anton', sans-serif; font-style: italic; font-weight: 400;
+  font-size: 28px; text-transform: uppercase; margin: 0;
+}
+.admin-count { color: var(--ink-3); font-size: 13px; }
+
+/* ── login ─────────────────────────────────────────────────────── */
+.admin-login-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.admin-login-card {
+  width: 100%; max-width: 380px;
+  border: 1px solid var(--line); background: var(--bg-2);
+  border-radius: 8px; padding: 32px;
+}
+.admin-login-card .nav-logo { justify-content: center; margin-bottom: 24px; font-size: 18px; }
+.admin-login-card form { display: flex; flex-direction: column; gap: 16px; }
+.admin-login-card .btn { justify-content: center; width: 100%; margin-top: 4px; }
+
+/* ── table ─────────────────────────────────────────────────────── */
+.admin-table-wrap {
+  border: 1px solid var(--line); border-radius: 8px; overflow: hidden auto; background: var(--bg-2);
+}
+.admin-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+.admin-table th, .admin-table td {
+  text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.admin-table th {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); font-weight: 500;
+}
+.admin-table tbody tr:last-child td { border-bottom: 0; }
+.admin-table tbody tr:hover { background: var(--bg-3); }
+.admin-table td.price { color: var(--orange); font-weight: 700; }
+.admin-table td.actions { display: flex; gap: 8px; white-space: nowrap; }
+.admin-table .btn { padding: 6px 12px; font-size: 11px; }
+.admin-empty { padding: 48px 16px; text-align: center; color: var(--ink-3); }
+
+/* ── modal ─────────────────────────────────────────────────────── */
+.admin-overlay {
+  position: fixed; inset: 0; background: rgba(5,5,7,0.72);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 48px 16px; overflow-y: auto; z-index: 200;
+}
+.admin-modal {
+  width: 100%; max-width: 560px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px;
+  padding: 28px;
+}
+.admin-modal h2 {
+  font-family: 'Anton', sans-serif; font-style: italic; font-weight: 400;
+  font-size: 22px; text-transform: uppercase; margin: 0 0 20px;
+}
+.admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.admin-form-grid .field-full { grid-column: 1 / -1; }
+.admin-modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+.btn-danger { border-color: rgba(230,57,70,0.5); color: #ff6b6b; }
+.btn-danger:hover { background: rgba(230,57,70,0.15); border-color: #e63946; }
+
+.admin-error {
+  background: rgba(230,57,70,0.12); border: 1px solid rgba(230,57,70,0.4);
+  color: #ff8f8f; padding: 10px 14px; border-radius: 6px; font-size: 13px;
+}
+.admin-notice {
+  background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.4);
+  color: #4ade80; padding: 10px 14px; border-radius: 6px; font-size: 13px;
+}
+.admin-setup-note {
+  max-width: 520px; margin: 80px auto; text-align: center; color: var(--ink-2);
+  line-height: 1.6; padding: 0 24px;
+}
+.admin-setup-note code {
+  background: var(--bg-3); padding: 2px 6px; border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-main { padding: 20px 16px; }
+  .admin-topbar { padding: 14px 16px; }
+}

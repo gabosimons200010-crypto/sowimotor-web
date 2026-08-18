@@ -91,6 +91,17 @@ function App() {
   const [bikeId, setBikeId] = hUseState(BIKES[0].id);
   const lang = tweaks.lang || "es";
 
+  // Live inventory: BIKES is a shared global array (hifi-data.jsx). When
+  // SowiInventory pulls fresh rows from Supabase it mutates that array in
+  // place, so we just need to force a re-render for the new data to show.
+  const [, bumpInventory] = hUseState(0);
+  hUseEffect(() => {
+    if (!window.SowiInventory) return;
+    const unsubscribe = window.SowiInventory.subscribe(() => bumpInventory((v) => v + 1));
+    window.SowiInventory.refresh();
+    return unsubscribe;
+  }, []);
+
   const go = (r, id) => {
     setRoute(r);
     if (id) setBikeId(id);
