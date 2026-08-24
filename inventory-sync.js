@@ -14,7 +14,13 @@
 
 (function () {
   var DEMO_KEY = "sowimotor.demo.bikes.v1";
+  var DEMO_META_KEY = "sowimotor.demo.meta.v1";
   var DEMO_SESSION_KEY = "sowimotor.demo.session.v1";
+
+  // Bump whenever the shipped inventory in hifi-data.jsx changes. Browsers
+  // that seeded an older version get a fresh copy instead of being stuck with
+  // whatever the list looked like the first time they visited.
+  var SEED_VERSION = 2;
 
   var live = !!(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
   var client = null;
@@ -62,15 +68,42 @@
     }
   }
 
-  // The static list in hifi-data.jsx is the demo's starting point. It is only
-  // seeded once; after that the owner's own edits win.
+  function readMeta() {
+    try {
+      return JSON.parse(localStorage.getItem(DEMO_META_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function writeMeta(meta) {
+    try { localStorage.setItem(DEMO_META_KEY, JSON.stringify(meta)); } catch (e) {}
+  }
+
+  // Records that this browser has made its own changes, so a later seed bump
+  // doesn't throw away a demo the owner is in the middle of.
+  function markTouched() {
+    var meta = readMeta();
+    if (!meta.touched) { meta.touched = true; writeMeta(meta); }
+  }
+
+  // The static list in hifi-data.jsx is the demo's starting point.
+  //
+  // It used to be seeded exactly once, which meant anyone who had already
+  // opened the site kept the old inventory forever — when photos were added,
+  // returning visitors still saw the pre-photo list. Now a seed-version bump
+  // re-seeds those browsers, unless this one has its own edits worth keeping.
   function seedDemo() {
     var existing = readStore();
-    if (existing) return existing;
+    var meta = readMeta();
+    var stale = existing && meta.seedVersion !== SEED_VERSION && !meta.touched;
+    if (existing && !stale) return existing;
+
     var seed = (window.BIKES || []).map(function (b, i) {
       return Object.assign({}, b, { created_at: new Date(2024, 0, 1, 0, i).toISOString() });
     });
     writeStore(seed);
+    writeMeta({ seedVersion: SEED_VERSION, touched: !!meta.touched });
     return seed;
   }
 
@@ -98,6 +131,7 @@
     var rows = seedDemo();
     rows.push(Object.assign({ id: newId(), created_at: new Date().toISOString() }, row));
     writeStore(rows);
+    markTouched();
     return { error: null };
   }
 
@@ -110,6 +144,7 @@
       return r.id === id ? Object.assign({}, r, row) : r;
     });
     writeStore(rows);
+    markTouched();
     return { error: null };
   }
 
@@ -133,11 +168,15 @@
     }
     var rows = seedDemo().filter(function (r) { return r.id !== id; });
     writeStore(rows);
+    markTouched();
     return { error: null };
   }
 
   function resetDemo() {
-    try { localStorage.removeItem(DEMO_KEY); } catch (e) {}
+    try {
+      localStorage.removeItem(DEMO_KEY);
+      localStorage.removeItem(DEMO_META_KEY);
+    } catch (e) {}
     return seedDemo();
   }
 
