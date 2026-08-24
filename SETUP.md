@@ -22,7 +22,7 @@ working preview, so it is safe to share as a pitch.
 ## Deploy to Netlify
 
 1. Netlify → **Add new site** → **Import an existing project** → pick this
-   GitHub repo and the `claude/web-in-git-1x1xbg` branch.
+   GitHub repo. The default `main` branch is the one to deploy.
 2. Leave the build command empty and publish directory as `.` —
    `netlify.toml` already sets this.
 3. Deploy. You get:
