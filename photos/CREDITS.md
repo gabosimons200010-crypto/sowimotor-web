@@ -4,7 +4,9 @@
 del local antes de publicar la web de verdad.**
 
 No son motos del inventario de SowiMotor: son imágenes de stock con licencia
-libre, elegidas para que la demo se vea creíble. Se pueden borrar desde el
+libre, elegidas para que la demo se vea creíble. Algunas ni siquiera son el
+modelo exacto que anuncia la ficha (se priorizó que la foto se viera bien,
+manteniendo el tipo de moto: scooter con scooter, naked con naked). Se pueden borrar desde el
 propio panel (`/admin`) al subir las reales.
 
 Todas se han recortado a 4:3 y recomprimido a 1200x900.
@@ -13,9 +15,9 @@ Todas se han recortado a 4:3 y recomprimido a 1200x900.
 |---|---|---|---|
 | `z900.jpg` | Unsplash | Unsplash License (uso comercial, sin atribución obligatoria) |  |
 | `mt07.jpg` | Unsplash | Unsplash License (uso comercial, sin atribución obligatoria) |  |
-| `cb650.jpg` | Wikimedia Commons | CC BY-SA 4.0 | 2019 Honda CB650R (20190428).jpg |
+| `cb650.jpg` | Wikimedia Commons | CC BY 3.0 | Yamaha MT-09.jpg |
 | `monst.jpg` | Wikimedia Commons | CC BY 4.0 | Ducati Monster 696, 2012.jpg |
-| `pcx.jpg` | Wikimedia Commons | CC BY 4.0 | 2022 Honda PCX 160 Gray Black.jpg |
+| `pcx.jpg` | Wikimedia Commons | CC BY 4.0 | 2024 Honda Forza 750 Special Edition.jpg |
 | `xsr7.jpg` | Wikimedia Commons | CC0 | Scenic motorcycle (Unsplash).jpg |
 | `gs.jpg` | Wikimedia Commons | CC BY-SA 4.0 | 06-2024 BMW R1250GS petrol-cap with keyless-logo.jpg |
 | `duke.jpg` | Unsplash | Unsplash License (uso comercial, sin atribución obligatoria) |  |
