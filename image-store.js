@@ -153,8 +153,15 @@
     return { id: id };
   }
 
+  // Photos that ship with the repo (photos/*.jpg) and absolute URLs resolve
+  // straight to themselves — there is nothing stored for them to look up, and
+  // nothing to delete either.
+  function isShipped(id) {
+    return /^(https?:|data:|photos\/)/.test(id);
+  }
+
   async function remove(id) {
-    if (!id) return;
+    if (!id || isShipped(id)) return;
     delete cache[id];
     if (live) { await client.storage.from(BUCKET).remove([id]); return; }
     await idbDelete(id);
@@ -162,6 +169,7 @@
 
   function url(id) {
     if (!id) return null;
+    if (isShipped(id)) return id;
     if (cache[id]) return cache[id];
     if (live && client) {
       var pub = client.storage.from(BUCKET).getPublicUrl(id);

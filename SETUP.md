@@ -113,6 +113,7 @@ its storage on save — so nothing is left orphaned.
 | `inventory-sync.js` | picks demo vs live mode and exposes one API to both pages |
 | `supabase-config.js` | the two keys; empty = demo mode |
 | `image-store.js` | photo upload/compression; IndexedDB in demo, Storage when live |
+| `photos/` | demo stock photos for the seeded bikes (see its CREDITS.md) |
 | `supabase-setup.sql` | run once in Supabase: table, security rules, photo bucket |
 | `hifi-*.jsx`, `hifi.css` | the site itself |
 | `admin.jsx`, `admin.css` | the admin panel |
@@ -120,8 +121,11 @@ its storage on save — so nothing is left orphaned.
 
 ## Known follow-ups before a real launch
 
-- **Real photos.** Upload works, but the seeded bikes ship with a drawn
-  motorcycle placeholder until the owner adds his own pictures.
+- **Swap the demo photos.** The 12 seeded bikes ship with freely-licensed
+  stock photos so the demo looks like a real dealership — they are *not*
+  SowiMotor's actual bikes. See `photos/CREDITS.md`; replace them from
+  `/admin` before a real launch. Bikes added without a photo fall back to a
+  drawn motorcycle placeholder.
 - **Page speed.** React and Babel load from a CDN and compile the JSX in the
   browser on every visit (~3MB, a second or two on mobile data). Fine for a
   demo; worth precompiling before a real launch.

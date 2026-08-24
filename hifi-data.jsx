@@ -1,18 +1,18 @@
 // SowiMotor hi-fi data — bikes, reviews, services. ES + CA strings.
 
 const BIKES = [
-  { id: "z900",  name: "Kawasaki Z900",     brand: "Kawasaki", type: "Naked",   year: 2021, km: 12400, price: 7490,  cc: 948, cv: 125, license: "A2", tag: "Recién entrada", color: "Verde lima" },
-  { id: "mt07",  name: "Yamaha MT-07",      brand: "Yamaha",   type: "Naked",   year: 2020, km: 18200, price: 5950,  cc: 689, cv: 73,  license: "A2", tag: null,              color: "Negro mate" },
-  { id: "cb650", name: "Honda CB650R",      brand: "Honda",    type: "Naked",   year: 2022, km: 6800,  price: 8200,  cc: 649, cv: 95,  license: "A",  tag: "Garantía 12m",   color: "Rojo grand prix" },
-  { id: "monst", name: "Ducati Monster",    brand: "Ducati",   type: "Naked",   year: 2019, km: 22500, price: 9150,  cc: 821, cv: 109, license: "A",  tag: null,              color: "Rojo Ducati" },
-  { id: "pcx",   name: "Honda PCX 125",     brand: "Honda",    type: "Scooter", year: 2021, km: 9100,  price: 2890,  cc: 125, cv: 12,  license: "A1", tag: "A1",             color: "Plata" },
-  { id: "xsr7",  name: "Yamaha XSR 700",    brand: "Yamaha",   type: "Custom",  year: 2020, km: 14300, price: 6200,  cc: 689, cv: 73,  license: "A2", tag: "Top ventas",     color: "Forest green" },
-  { id: "gs",    name: "BMW R 1250 GS",     brand: "BMW",      type: "Trail",   year: 2019, km: 28000, price: 14500, cc: 1254,cv: 136, license: "A",  tag: null,              color: "Triple negro" },
-  { id: "duke",  name: "KTM Duke 390",      brand: "KTM",      type: "Naked",   year: 2022, km: 4500,  price: 4890,  cc: 373, cv: 44,  license: "A2", tag: "A2",             color: "Naranja KTM" },
-  { id: "gsxs",  name: "Suzuki GSX-S 750",  brand: "Suzuki",   type: "Sport",   year: 2018, km: 31000, price: 5490,  cc: 749, cv: 114, license: "A",  tag: null,              color: "Azul" },
-  { id: "tmax",  name: "Yamaha TMAX 530",   brand: "Yamaha",   type: "Scooter", year: 2019, km: 26000, price: 7290,  cc: 530, cv: 46,  license: "A2", tag: null,              color: "Negro" },
-  { id: "v7",    name: "Moto Guzzi V7",     brand: "Moto Guzzi", type: "Custom",year: 2020, km: 11800, price: 7990,  cc: 744, cv: 65,  license: "A2", tag: "Clásica",        color: "Crema" },
-  { id: "ninja", name: "Kawasaki Ninja 650",brand: "Kawasaki", type: "Sport",   year: 2021, km: 9700,  price: 6890,  cc: 649, cv: 68,  license: "A2", tag: null,              color: "Verde lima" },
+  { id: "z900",  name: "Kawasaki Z900",     brand: "Kawasaki", type: "Naked",   year: 2021, km: 12400, price: 7490,  cc: 948, cv: 125, license: "A2", tag: "Recién entrada", color: "Verde lima", images: ["photos/z900.jpg"] },
+  { id: "mt07",  name: "Yamaha MT-07",      brand: "Yamaha",   type: "Naked",   year: 2020, km: 18200, price: 5950,  cc: 689, cv: 73,  license: "A2", tag: null,              color: "Negro mate", images: ["photos/mt07.jpg"] },
+  { id: "cb650", name: "Honda CB650R",      brand: "Honda",    type: "Naked",   year: 2022, km: 6800,  price: 8200,  cc: 649, cv: 95,  license: "A",  tag: "Garantía 12m",   color: "Rojo grand prix", images: ["photos/cb650.jpg"] },
+  { id: "monst", name: "Ducati Monster",    brand: "Ducati",   type: "Naked",   year: 2019, km: 22500, price: 9150,  cc: 821, cv: 109, license: "A",  tag: null,              color: "Rojo Ducati", images: ["photos/monst.jpg"] },
+  { id: "pcx",   name: "Honda PCX 125",     brand: "Honda",    type: "Scooter", year: 2021, km: 9100,  price: 2890,  cc: 125, cv: 12,  license: "A1", tag: "A1",             color: "Plata", images: ["photos/pcx.jpg"] },
+  { id: "xsr7",  name: "Yamaha XSR 700",    brand: "Yamaha",   type: "Custom",  year: 2020, km: 14300, price: 6200,  cc: 689, cv: 73,  license: "A2", tag: "Top ventas",     color: "Forest green", images: ["photos/xsr7.jpg"] },
+  { id: "gs",    name: "BMW R 1250 GS",     brand: "BMW",      type: "Trail",   year: 2019, km: 28000, price: 14500, cc: 1254,cv: 136, license: "A",  tag: null,              color: "Triple negro", images: ["photos/gs.jpg"] },
+  { id: "duke",  name: "KTM Duke 390",      brand: "KTM",      type: "Naked",   year: 2022, km: 4500,  price: 4890,  cc: 373, cv: 44,  license: "A2", tag: "A2",             color: "Naranja KTM", images: ["photos/duke.jpg"] },
+  { id: "gsxs",  name: "Suzuki GSX-S 750",  brand: "Suzuki",   type: "Sport",   year: 2018, km: 31000, price: 5490,  cc: 749, cv: 114, license: "A",  tag: null,              color: "Azul", images: ["photos/gsxs.jpg"] },
+  { id: "tmax",  name: "Yamaha TMAX 530",   brand: "Yamaha",   type: "Scooter", year: 2019, km: 26000, price: 7290,  cc: 530, cv: 46,  license: "A2", tag: null,              color: "Negro", images: ["photos/tmax.jpg"] },
+  { id: "v7",    name: "Moto Guzzi V7",     brand: "Moto Guzzi", type: "Custom",year: 2020, km: 11800, price: 7990,  cc: 744, cv: 65,  license: "A2", tag: "Clásica",        color: "Crema", images: ["photos/v7.jpg"] },
+  { id: "ninja", name: "Kawasaki Ninja 650",brand: "Kawasaki", type: "Sport",   year: 2021, km: 9700,  price: 6890,  cc: 649, cv: 68,  license: "A2", tag: null,              color: "Verde lima", images: ["photos/ninja.jpg"] },
 ];
 
 // Pulled from the Google reviews paste.
