@@ -2,10 +2,39 @@
 const { useState, useEffect, useMemo, useRef } = React;
 
 // ── Shared atoms ──────────────────────────────────────────────────
-function Img({ label, style, className = "", onClick }) {
+// Stylised side-view motorcycle, drawn rather than photographed, so a bike
+// with no photo yet still looks deliberate instead of broken.
+function MotoGlyph() {
+  return (
+    <svg className="img-glyph" viewBox="0 0 200 120" aria-hidden="true">
+      {/* tyres + hubs — thick rims read as a motorcycle, not a bicycle */}
+      <circle cx="48" cy="82" r="27" fill="none" stroke="currentColor" strokeWidth="7" />
+      <circle cx="152" cy="82" r="27" fill="none" stroke="currentColor" strokeWidth="7" />
+      <circle cx="48" cy="82" r="6.5" fill="currentColor" />
+      <circle cx="152" cy="82" r="6.5" fill="currentColor" />
+      {/* swingarm, front fork, handlebar */}
+      <path d="M48 82 L100 76" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
+      <path d="M152 82 L168 42" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
+      <path d="M156 38 L182 32" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
+      {/* tail, seat, tank and engine as one solid mass */}
+      <path d="M54 50 L104 45 L129 36 L146 43 L154 58 L130 66 L110 70 L106 86 L84 86 L80 68 L56 63 Z"
+            fill="currentColor" />
+    </svg>
+  );
+}
+
+function Img({ label, style, className = "", onClick, src, alt }) {
+  if (src) {
+    return (
+      <div className={"img has-photo " + className} style={style} onClick={onClick}>
+        <img src={src} alt={alt || label || ""} loading="lazy" />
+      </div>
+    );
+  }
   return (
     <div className={"img " + className} style={style} onClick={onClick}>
-      <span className="img-label">{label}</span>
+      <MotoGlyph />
+      {label && <span className="img-label">{label}</span>}
     </div>
   );
 }
@@ -40,7 +69,11 @@ function BikeCard({ bike, onOpen, lang }) {
     : null;
   return (
     <div className="card" onClick={() => onOpen(bike.id)}>
-      <Img label={`${bike.brand.toUpperCase()} · ${bike.name.toUpperCase()}`} />
+      <Img
+        src={window.SowiImages && SowiImages.cover(bike)}
+        alt={bike.name}
+        label={`${bike.brand.toUpperCase()} · ${bike.name.toUpperCase()}`}
+      />
       <div className="card-body">
         <div className="row between center">
           <span className="card-meta">{bike.brand} · {bike.type}</span>
@@ -338,6 +371,10 @@ function Detail({ lang, bikeId, go }) {
   const [active, setActive] = useState(0);
   useEffect(() => { setActive(0); window.scrollTo({ top: 0 }); }, [bikeId]);
   const views = ["3/4 frontal", "Lateral", "Trasera", "Cuadro", "Detalle"];
+  // real photos when the bike has them, otherwise the labelled placeholders
+  const photos = (bike.images || [])
+    .map((id) => window.SowiImages && SowiImages.url(id))
+    .filter(Boolean);
   const related = BIKES.filter(b => b.id !== bike.id && b.type === bike.type).slice(0, 3);
   if (related.length < 3) related.push(...BIKES.filter(b => b.id !== bike.id && !related.includes(b)).slice(0, 3 - related.length));
 
@@ -347,10 +384,22 @@ function Detail({ lang, bikeId, go }) {
 
       <div className="detail-grid">
         <div>
-          <Img className="gallery-main" label={`${bike.name.toUpperCase()} · ${views[active]}`} />
+          <Img
+            className="gallery-main"
+            src={photos.length ? photos[Math.min(active, photos.length - 1)] : null}
+            alt={bike.name}
+            label={`${bike.name.toUpperCase()} · ${views[active]}`}
+          />
           <div className="gallery-thumbs">
-            {views.map((v, i) => (
-              <Img key={i} className={i === active ? "on" : ""} label={v} onClick={() => setActive(i)} />
+            {(photos.length ? photos : views).map((item, i) => (
+              <Img
+                key={i}
+                className={i === active ? "on" : ""}
+                src={photos.length ? item : null}
+                alt={`${bike.name} ${i + 1}`}
+                label={photos.length ? null : item}
+                onClick={() => setActive(i)}
+              />
             ))}
           </div>
         </div>

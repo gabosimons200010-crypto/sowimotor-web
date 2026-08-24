@@ -113,7 +113,20 @@
     return { error: null };
   }
 
+  // Deleting a bike also drops its photos, so storage doesn't fill up with
+  // images nothing references any more.
+  async function removePhotosOf(id) {
+    if (!window.SowiImages) return;
+    var res = await list();
+    var bike = (res.data || []).find(function (r) { return r.id === id; });
+    if (!bike || !bike.images) return;
+    for (var i = 0; i < bike.images.length; i++) {
+      await window.SowiImages.remove(bike.images[i]);
+    }
+  }
+
   async function remove(id) {
+    await removePhotosOf(id);
     if (mode === "live") {
       var res = await client.from("bikes").delete().eq("id", id);
       return { error: res.error ? res.error.message : null };
@@ -131,6 +144,8 @@
   // Pull the current inventory into the global BIKES array the public pages
   // render from, then tell React to re-render.
   async function refresh() {
+    // photos are preloaded into memory so the first paint already has them
+    if (window.SowiImages) { try { await window.SowiImages.ready; } catch (e) {} }
     var res = await list();
     if (res.error || !res.data || res.data.length === 0) return false;
     BIKES.length = 0;

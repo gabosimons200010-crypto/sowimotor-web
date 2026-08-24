@@ -15,8 +15,12 @@ create table if not exists bikes (
   license text not null,
   tag text,
   color text,
+  images jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
+
+-- if you ran an earlier version of this script, add the photos column:
+alter table bikes add column if not exists images jsonb not null default '[]'::jsonb;
 
 alter table bikes enable row level security;
 
@@ -59,3 +63,31 @@ insert into bikes (id, name, brand, type, year, km, price, cc, cv, license, tag,
   ('v7',    'Moto Guzzi V7',      'Moto Guzzi', 'Custom',  2020, 11800, 7990,  744,  65,  'A2', 'Clásica',         'Crema',           now() + interval '10 second'),
   ('ninja', 'Kawasaki Ninja 650', 'Kawasaki',   'Sport',   2021, 9700,  6890,  649,  68,  'A2', null,              'Verde lima',      now() + interval '11 second')
 on conflict (id) do nothing;
+
+
+-- ── photo storage ────────────────────────────────────────────────
+-- Bike photos are uploaded to a public Storage bucket; the bikes table only
+-- keeps the file paths. Public read so visitors see them, authenticated
+-- write so only the logged-in owner can add or remove them.
+
+insert into storage.buckets (id, name, public)
+values ('bike-photos', 'bike-photos', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public can view bike photos" on storage.objects;
+create policy "Public can view bike photos"
+  on storage.objects for select
+  to anon, authenticated
+  using (bucket_id = 'bike-photos');
+
+drop policy if exists "Authenticated can upload bike photos" on storage.objects;
+create policy "Authenticated can upload bike photos"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'bike-photos');
+
+drop policy if exists "Authenticated can delete bike photos" on storage.objects;
+create policy "Authenticated can delete bike photos"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'bike-photos');

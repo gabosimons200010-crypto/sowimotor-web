@@ -485,6 +485,8 @@ input[type="range"]::-webkit-slider-thumb {
    ══════════════════════════════════════════════════════════════ */
 
 /* burger button: hidden on desktop, shown on mobile */
+.nav-menu-call { display: none; }
+
 .nav-burger {
   display: none;
   background: none; border: 1px solid var(--line); border-radius: 6px;
@@ -619,3 +621,20 @@ input[type="range"]::-webkit-slider-thumb {
 @media (prefers-reduced-motion: reduce) {
   .demo-badge, .demo-badge:hover { transition: none; transform: none; }
 }
+
+/* ── real photos + drawn placeholder ───────────────────────────── */
+.img.has-photo { background: var(--bg-3); }
+.img.has-photo::before { display: none; }
+.img.has-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-glyph {
+  position: relative; z-index: 1;
+  width: 46%; max-width: 150px; height: auto;
+  color: var(--ink-3); opacity: 0.32;
+}
+.img-label + .img-glyph, .img-glyph + .img-label { margin-top: 8px; }
+.img { flex-direction: column; gap: 6px; }
+.card .img-glyph { width: 40%; }
+.gallery-thumbs .img-glyph { width: 42%; }
+
+/* the hero background is full-bleed behind the headline — no glyph/caption */
+.hero-bg .img-glyph, .hero-bg .img-label { display: none; }

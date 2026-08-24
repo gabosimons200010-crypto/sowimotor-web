@@ -6,6 +6,7 @@ modes, and it picks the mode automatically.
 | | Demo mode (now) | Live mode (after setup) |
 |---|---|---|
 | Inventory lives in | the visitor's own browser | a shared database |
+| Photos live in | the browser (IndexedDB) | Supabase Storage |
 | Owner can add/edit/delete | yes | yes |
 | Changes visible to | only that device | everyone |
 | Login | any email/password | real password |
@@ -84,6 +85,25 @@ connected.
 
 ---
 
+## Photos
+
+Every bike can have several photos, managed from the same edit form. The first
+photo is the one shown in listings; the ★ button on any other photo promotes it.
+
+Uploads are downscaled to 1600px and re-encoded as JPEG **in the browser**
+before being stored, so a 4MB phone picture lands at roughly 150-250KB. That
+keeps the site fast and, in demo mode, keeps the whole inventory inside the
+browser's storage budget.
+
+- **Demo mode** — photos go to IndexedDB on that device.
+- **Live mode** — photos go to the public `bike-photos` Storage bucket, created
+  by `supabase-setup.sql`. Same free tier (1GB, ~4000 photos at this size).
+
+Deleting a bike deletes its photos too, and removing a photo from a bike frees
+its storage on save — so nothing is left orphaned.
+
+---
+
 ## Files
 
 | File | What it is |
@@ -92,16 +112,16 @@ connected.
 | `admin.html` | the owner's inventory panel (`/admin`) |
 | `inventory-sync.js` | picks demo vs live mode and exposes one API to both pages |
 | `supabase-config.js` | the two keys; empty = demo mode |
-| `supabase-setup.sql` | run once in Supabase to create the table |
+| `image-store.js` | photo upload/compression; IndexedDB in demo, Storage when live |
+| `supabase-setup.sql` | run once in Supabase: table, security rules, photo bucket |
 | `hifi-*.jsx`, `hifi.css` | the site itself |
 | `admin.jsx`, `admin.css` | the admin panel |
 | `SowiMotor Web/Wireframes.html` | earlier design-stage prototypes, not deployed |
 
 ## Known follow-ups before a real launch
 
-- **Photos.** Every bike image is still a grey placeholder. Real photos are
-  the single biggest visual upgrade, and the admin panel has no image upload
-  yet — that needs Supabase Storage (also free tier) once live mode is on.
+- **Real photos.** Upload works, but the seeded bikes ship with a drawn
+  motorcycle placeholder until the owner adds his own pictures.
 - **Page speed.** React and Babel load from a CDN and compile the JSX in the
   browser on every visit (~3MB, a second or two on mobile data). Fine for a
   demo; worth precompiling before a real launch.

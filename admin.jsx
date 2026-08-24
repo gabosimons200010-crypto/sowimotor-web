@@ -1,7 +1,7 @@
 // SowiMotor — inventory admin panel. Plain React, no build step (Babel in-browser).
 // Talks only to window.SowiInventory, so it behaves identically whether the
 // inventory is backed by a real database or by the browser-only demo store.
-const { useState: aUseState, useEffect: aUseEffect } = React;
+const { useState: aUseState, useEffect: aUseEffect, useRef: aUseRef } = React;
 
 const store = window.SowiInventory;
 
@@ -22,6 +22,7 @@ function rowToFields(row) {
   });
   out.license = row.license || "A2";
   if (row.id) out.id = row.id;
+  out.images = Array.isArray(row.images) ? row.images.slice() : [];
   return out;
 }
 
@@ -49,24 +50,117 @@ function money(n) {
   return (n || 0).toLocaleString("es-ES") + " €";
 }
 
+/* ── photo uploader ──────────────────────────────────────────── */
+function PhotoUploader({ images, setImages, onUploaded }) {
+  const [busy, setBusy] = aUseState(0);
+  const [error, setError] = aUseState("");
+  const inputRef = aUseRef(null);
+
+  async function addFiles(fileList) {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    setError("");
+    setBusy(files.length);
+    const added = [];
+    for (const file of files) {
+      const res = await window.SowiImages.put(file);
+      if (res.error) setError(res.error);
+      else added.push(res.id);
+      setBusy((n) => n - 1);
+    }
+    if (added.length) {
+      onUploaded(added);
+      setImages(images.concat(added));
+    }
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function removeAt(i) {
+    setImages(images.filter((_, j) => j !== i));
+  }
+
+  function makeCover(i) {
+    const next = images.slice();
+    const [moved] = next.splice(i, 1);
+    next.unshift(moved);
+    setImages(next);
+  }
+
+  return (
+    <div className="field field-full">
+      <label>Fotos</label>
+      <div className="photo-grid">
+        {images.map((id, i) => (
+          <div className={"photo-tile" + (i === 0 ? " is-cover" : "")} key={id}>
+            <img src={window.SowiImages.url(id)} alt={`Foto ${i + 1}`} />
+            {i === 0 && <span className="photo-cover-badge">Principal</span>}
+            <div className="photo-tile-actions">
+              {i !== 0 && (
+                <button type="button" title="Poner como principal" onClick={() => makeCover(i)}>★</button>
+              )}
+              <button type="button" title="Quitar foto" onClick={() => removeAt(i)}>✕</button>
+            </div>
+          </div>
+        ))}
+
+        {busy > 0 && (
+          <div className="photo-tile photo-tile-busy">
+            <span className="photo-spinner" />
+            <span>Subiendo…</span>
+          </div>
+        )}
+
+        <button type="button" className="photo-add" onClick={() => inputRef.current && inputRef.current.click()}>
+          <span className="photo-add-plus">+</span>
+          <span>Añadir fotos</span>
+        </button>
+      </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={(e) => addFiles(e.target.files)}
+      />
+
+      {error && <div className="admin-error" style={{ marginTop: 10 }}>{error}</div>}
+      <span className="field-hint">
+        La primera foto es la que se ve en el listado. Pulsa ★ para cambiarla.
+        Las fotos se reducen automáticamente para que la web cargue rápido.
+      </span>
+    </div>
+  );
+}
+
 /* ── add / edit form ─────────────────────────────────────────── */
 function BikeForm({ initial, onCancel, onSave, saving, error }) {
   const [f, setF] = aUseState(initial);
+  const [images, setImages] = aUseState(initial.images || []);
+  const addedRef = aUseRef([]); // uploaded during this edit, discarded on cancel
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
 
+  // Photos are only really deleted on save/cancel, never mid-edit — otherwise
+  // backing out of an edit would leave the saved bike pointing at a gone file.
+  function cancel() {
+    addedRef.current.forEach((id) => window.SowiImages.remove(id));
+    onCancel();
+  }
+
   aUseEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") onCancel(); };
+    const onKey = (e) => { if (e.key === "Escape") cancel(); };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
-  }, []);
+  }, [images]);
 
   return (
-    <div className="admin-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
+    <div className="admin-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) cancel(); }}>
       <div className="admin-modal" role="dialog" aria-modal="true">
         <h2>{initial.id ? "Editar moto" : "Añadir moto"}</h2>
         {error && <div className="admin-error" style={{ marginBottom: 16 }}>{error}</div>}
-        <form onSubmit={(e) => { e.preventDefault(); onSave(f); }}>
+        <form onSubmit={(e) => { e.preventDefault(); onSave(f, images, initial.images || []); }}>
           <div className="admin-form-grid">
             <div className="field field-full">
               <label>Nombre</label>
@@ -118,9 +212,15 @@ function BikeForm({ initial, onCancel, onSave, saving, error }) {
               <input value={f.tag} onChange={set("tag")} placeholder="Recién entrada, Top ventas, Garantía 12m…" />
               <span className="field-hint">Se muestra como una pegatina naranja sobre la foto.</span>
             </div>
+
+            <PhotoUploader
+              images={images}
+              setImages={setImages}
+              onUploaded={(ids) => { addedRef.current = addedRef.current.concat(ids); }}
+            />
           </div>
           <div className="admin-modal-actions">
-            <button type="button" className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
+            <button type="button" className="btn btn-ghost" onClick={cancel}>Cancelar</button>
             <button type="submit" className="btn btn-orange" disabled={saving}>
               {saving ? "Guardando…" : "Guardar"}
             </button>
@@ -152,6 +252,18 @@ function ConfirmDelete({ bike, onCancel, onConfirm, busy }) {
 }
 
 /* ── inventory list ──────────────────────────────────────────── */
+function PhotoThumb({ bike }) {
+  const src = window.SowiImages && SowiImages.cover(bike);
+  const count = (bike.images || []).length;
+  if (!src) return <span className="row-thumb row-thumb-empty" title="Sin fotos">📷</span>;
+  return (
+    <span className="row-thumb">
+      <img src={src} alt="" />
+      {count > 1 && <span className="row-thumb-count">{count}</span>}
+    </span>
+  );
+}
+
 function InventoryList({ bikes, onEdit, onDelete }) {
   if (bikes.length === 0) {
     return (
@@ -175,7 +287,12 @@ function InventoryList({ bikes, onEdit, onDelete }) {
         <tbody>
           {bikes.map((b) => (
             <tr key={b.id}>
-              <td data-label="Moto" className="cell-name">{b.name}</td>
+              <td data-label="Moto" className="cell-name">
+                <span className="cell-name-inner">
+                  <PhotoThumb bike={b} />
+                  <span>{b.name}</span>
+                </span>
+              </td>
               <td data-label="Marca">{b.brand}</td>
               <td data-label="Tipo">{b.type}</td>
               <td data-label="Año">{b.year}</td>
@@ -280,13 +397,17 @@ function AdminApp() {
     setTimeout(() => setFlash(""), 3500);
   }
 
-  async function handleSave(fields) {
+  async function handleSave(fields, images, originalImages) {
     setSaving(true);
     setSaveError("");
-    const row = fieldsToRow(fields);
+    const row = Object.assign(fieldsToRow(fields), { images: images || [] });
     const res = editing.id ? await store.update(editing.id, row) : await store.create(row);
     setSaving(false);
     if (res.error) { setSaveError(res.error); return; }
+    // now that the new list is safely saved, drop the photos it no longer uses
+    (originalImages || [])
+      .filter((id) => (images || []).indexOf(id) === -1)
+      .forEach((id) => window.SowiImages.remove(id));
     announce(editing.id ? `“${row.name}” actualizada.` : `“${row.name}” publicada en la web.`);
     setEditing(null);
     load();
