@@ -1,32 +1,141 @@
-// SowiMotor — live inventory sync.
-// Keeps the global BIKES array (defined in hifi-data.jsx) in sync with the
-// Supabase "bikes" table, so edits made in admin.html show up on the public
-// site. If Supabase isn't configured yet (see supabase-config.js), this
-// quietly does nothing and the site keeps using the static seed list.
+// SowiMotor — inventory store.
+//
+// Presents one small API to the rest of the app, backed by whichever of two
+// modes is available:
+//
+//   "live" — supabase-config.js has real credentials, so the inventory lives
+//            in a shared database and every visitor sees the same thing.
+//   "demo" — no credentials yet. The inventory lives in this browser's own
+//            localStorage, so the admin panel is fully usable for a demo,
+//            but changes stay on the device that made them.
+//
+// The public site and the admin panel both talk to window.SowiInventory and
+// don't care which mode is active.
 
 (function () {
-  var configured = !!(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
-  var listeners = [];
-  var client = null;
+  var DEMO_KEY = "sowimotor.demo.bikes.v1";
+  var DEMO_SESSION_KEY = "sowimotor.demo.session.v1";
 
-  if (configured && window.supabase && window.supabase.createClient) {
-    client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-  } else if (configured) {
-    console.warn("SowiInventory: supabase-js failed to load; showing static inventory.");
-    configured = false;
+  var live = !!(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
+  var client = null;
+  var listeners = [];
+
+  if (live) {
+    if (window.supabase && window.supabase.createClient) {
+      client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    } else {
+      console.warn("SowiInventory: supabase-js did not load; falling back to demo mode.");
+      live = false;
+    }
   }
 
-  async function refresh() {
-    if (!configured) return false;
-    var res = await client.from("bikes").select("*").order("created_at", { ascending: true });
-    if (res.error) {
-      console.warn("SowiInventory: could not load live inventory, showing static list.", res.error.message);
+  var mode = live ? "live" : "demo";
+
+  function newId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "bike-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function notify() {
+    listeners.forEach(function (fn) { fn(); });
+  }
+
+  // ── demo storage ───────────────────────────────────────────────
+  function readStore() {
+    try {
+      var raw = localStorage.getItem(DEMO_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch (e) {
+      return null; // private mode, blocked storage, corrupt JSON
+    }
+  }
+
+  function writeStore(rows) {
+    try {
+      localStorage.setItem(DEMO_KEY, JSON.stringify(rows));
+      return true;
+    } catch (e) {
+      console.warn("SowiInventory: could not save demo data (storage blocked).");
       return false;
     }
-    if (!res.data || res.data.length === 0) return false;
+  }
+
+  // The static list in hifi-data.jsx is the demo's starting point. It is only
+  // seeded once; after that the owner's own edits win.
+  function seedDemo() {
+    var existing = readStore();
+    if (existing) return existing;
+    var seed = (window.BIKES || []).map(function (b, i) {
+      return Object.assign({}, b, { created_at: new Date(2024, 0, 1, 0, i).toISOString() });
+    });
+    writeStore(seed);
+    return seed;
+  }
+
+  function sortByCreated(rows) {
+    return rows.slice().sort(function (a, b) {
+      return String(a.created_at || "") < String(b.created_at || "") ? -1 : 1;
+    });
+  }
+
+  // ── public API ─────────────────────────────────────────────────
+  async function list() {
+    if (mode === "live") {
+      var res = await client.from("bikes").select("*").order("created_at", { ascending: true });
+      if (res.error) return { data: null, error: res.error.message };
+      return { data: res.data, error: null };
+    }
+    return { data: sortByCreated(seedDemo()), error: null };
+  }
+
+  async function create(row) {
+    if (mode === "live") {
+      var res = await client.from("bikes").insert(Object.assign({ id: newId() }, row));
+      return { error: res.error ? res.error.message : null };
+    }
+    var rows = seedDemo();
+    rows.push(Object.assign({ id: newId(), created_at: new Date().toISOString() }, row));
+    writeStore(rows);
+    return { error: null };
+  }
+
+  async function update(id, row) {
+    if (mode === "live") {
+      var res = await client.from("bikes").update(row).eq("id", id);
+      return { error: res.error ? res.error.message : null };
+    }
+    var rows = seedDemo().map(function (r) {
+      return r.id === id ? Object.assign({}, r, row) : r;
+    });
+    writeStore(rows);
+    return { error: null };
+  }
+
+  async function remove(id) {
+    if (mode === "live") {
+      var res = await client.from("bikes").delete().eq("id", id);
+      return { error: res.error ? res.error.message : null };
+    }
+    var rows = seedDemo().filter(function (r) { return r.id !== id; });
+    writeStore(rows);
+    return { error: null };
+  }
+
+  function resetDemo() {
+    try { localStorage.removeItem(DEMO_KEY); } catch (e) {}
+    return seedDemo();
+  }
+
+  // Pull the current inventory into the global BIKES array the public pages
+  // render from, then tell React to re-render.
+  async function refresh() {
+    var res = await list();
+    if (res.error || !res.data || res.data.length === 0) return false;
     BIKES.length = 0;
     res.data.forEach(function (row) { BIKES.push(row); });
-    listeners.forEach(function (fn) { fn(); });
+    notify();
     return true;
   }
 
@@ -38,10 +147,59 @@
     };
   }
 
+  // ── demo auth ──────────────────────────────────────────────────
+  // In demo mode any credentials are accepted; the login screen exists to
+  // show how the real thing behaves, not to secure anything.
+  var auth = {
+    async getSession() {
+      if (mode === "live") {
+        var res = await client.auth.getSession();
+        return res.data.session;
+      }
+      try {
+        var raw = sessionStorage.getItem(DEMO_SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return null; }
+    },
+    onChange(cb) {
+      if (mode === "live") {
+        var res = client.auth.onAuthStateChange(function (_e, sess) { cb(sess); });
+        return function () { res.data.subscription.unsubscribe(); };
+      }
+      return function () {};
+    },
+    async signIn(email, password) {
+      if (mode === "live") {
+        var res = await client.auth.signInWithPassword({ email: email, password: password });
+        return { error: res.error ? res.error.message : null };
+      }
+      var session = { user: { email: email || "demo@sowimotor.com" } };
+      try { sessionStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session)); } catch (e) {}
+      return { error: null, session: session };
+    },
+    async signOut() {
+      if (mode === "live") { await client.auth.signOut(); return; }
+      try { sessionStorage.removeItem(DEMO_SESSION_KEY); } catch (e) {}
+    },
+  };
+
   window.SowiInventory = {
-    isConfigured: configured,
+    mode: mode,
+    isDemo: mode === "demo",
+    isConfigured: mode === "live",
     client: client,
+    list: list,
+    create: create,
+    update: update,
+    remove: remove,
+    resetDemo: resetDemo,
     refresh: refresh,
     subscribe: subscribe,
+    auth: auth,
   };
+
+  // In demo mode, an edit made in one tab should show up in the other.
+  window.addEventListener("storage", function (e) {
+    if (e.key === DEMO_KEY) refresh();
+  });
 })();

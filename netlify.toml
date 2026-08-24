@@ -1,0 +1,29 @@
+# Netlify config — the site is plain static files, so there is no build step.
+
+[build]
+  publish = "."
+  command = ""
+
+# Clean URL for the owner's panel: /admin instead of /admin.html
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+# The prototype versions keep working, but the deployed site is index.html.
+[[redirects]]
+  from = "/SowiMotor Final.html"
+  to = "/index.html"
+  status = 301
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# The admin panel should never be indexed by search engines.
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

@@ -104,7 +104,7 @@ function Home({ lang, go }) {
           <div className="row between" style={{ alignItems: "flex-end", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
             <div>
               <div className="kicker" style={{ marginBottom: 8 }}>{t.home.featuredKick}</div>
-              <h2 className="h-display" style={{ fontSize: 64, margin: 0 }}>{t.home.featured}</h2>
+              <h2 className="h-display hd-64" style={{ margin: 0 }}>{t.home.featured}</h2>
               <p className="text-mute" style={{ marginTop: 8, fontSize: 14 }}>{t.home.featuredSub}</p>
             </div>
             <button className="btn" onClick={() => go("catalog")}>{t.home.seeAll} →</button>
@@ -123,7 +123,7 @@ function Home({ lang, go }) {
       <section className="section" style={{ paddingTop: 0 }}>
         <FadeIn>
           <div className="kicker" style={{ marginBottom: 8 }}>{t.home.svcKick}</div>
-          <h2 className="h-display" style={{ fontSize: 72, margin: "0 0 32px" }}>{t.home.svcTitle}</h2>
+          <h2 className="h-display hd-72" style={{ margin: "0 0 32px" }}>{t.home.svcTitle}</h2>
         </FadeIn>
         <div>
           {t.home.services.map(([n, ttl, body], i) => (
@@ -141,11 +141,11 @@ function Home({ lang, go }) {
 
       {/* Sell-your-bike */}
       <section style={{ background: "var(--bg-2)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
-        <div className="section" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 48, alignItems: "center", paddingBlock: 80 }}>
+        <div className="section sec-split sec-split-a" style={{ paddingBlock: 80 }}>
           <FadeIn>
             <div>
               <div className="kicker" style={{ marginBottom: 12 }}>{t.home.sellKick}</div>
-              <h2 className="h-display" style={{ fontSize: 80, margin: "0 0 16px" }}>
+              <h2 className="h-display hd-80" style={{ margin: "0 0 16px" }}>
                 {t.home.sellTitle.split(" ").map((w, i, arr) =>
                   i === arr.length - 1 ? <span key={i} className="text-orange">{w}</span> : <span key={i}>{w} </span>
                 )}
@@ -168,11 +168,11 @@ function Home({ lang, go }) {
         <FadeIn>
           <div className="kicker" style={{ marginBottom: 8 }}>{t.home.reviewsKick}</div>
           <div className="row between" style={{ alignItems: "flex-end", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
-            <h2 className="h-display" style={{ fontSize: 64, margin: 0 }}>{t.home.reviewsTitle}</h2>
+            <h2 className="h-display hd-64" style={{ margin: 0 }}>{t.home.reviewsTitle}</h2>
             <span className="text-mute" style={{ fontSize: 13 }}><Stars /> {t.home.reviewsSub}</span>
           </div>
         </FadeIn>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+        <div className="grid-3">
           {REVIEWS[lang].map((r, i) => (
             <FadeIn key={i} delay={i * 80}>
               <div className="review">
@@ -193,11 +193,11 @@ function Home({ lang, go }) {
 
       {/* Visit / Map */}
       <section style={{ background: "var(--bg-2)", borderTop: "1px solid var(--line)" }}>
-        <div className="section" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 40, alignItems: "stretch" }}>
+        <div className="section sec-split sec-split-b">
           <FadeIn>
             <div>
               <div className="kicker" style={{ marginBottom: 8 }}>{t.home.visitKick}</div>
-              <h2 className="h-display" style={{ fontSize: 64, margin: "0 0 24px" }}>{t.home.visitTitle}</h2>
+              <h2 className="h-display hd-64" style={{ margin: "0 0 24px" }}>{t.home.visitTitle}</h2>
               <p style={{ whiteSpace: "pre-line", fontSize: 16, lineHeight: 1.6 }}>{t.home.visitAddr}</p>
               <div style={{ marginTop: 24 }}>
                 <div className="kicker" style={{ marginBottom: 8 }}>{t.home.hours}</div>
@@ -254,7 +254,7 @@ function Catalog({ lang, go, initialBrand }) {
     <section className="section">
       <div style={{ marginBottom: 32 }}>
         <div className="kicker" style={{ marginBottom: 8 }}>SOWIMOTOR · BADALONA</div>
-        <h1 className="h-display" style={{ fontSize: 80, margin: 0 }}>{t.cat.title}</h1>
+        <h1 className="h-display hd-80" style={{ margin: 0 }}>{t.cat.title}</h1>
         <p className="text-mute" style={{ marginTop: 12, fontSize: 16 }}>{t.cat.sub}</p>
       </div>
 
@@ -321,7 +321,7 @@ function Catalog({ lang, go, initialBrand }) {
               <button className="btn" onClick={reset} style={{ marginTop: 16 }}>{t.cat.reset}</button>
             </div>
           ) : (
-            <div className="grid-bikes" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+            <div className="grid-bikes grid-bikes-3">
               {filtered.map(b => <BikeCard key={b.id} bike={b} onOpen={(id) => go("detail", id)} lang={lang} />)}
             </div>
           )}
@@ -358,7 +358,7 @@ function Detail({ lang, bikeId, go }) {
         <div className="col gap-16">
           <div>
             <div className="kicker" style={{ marginBottom: 8 }}>{bike.brand} · {bike.type}</div>
-            <h1 className="h-display" style={{ fontSize: 56, margin: "0 0 6px" }}>{bike.name}</h1>
+            <h1 className="h-display hd-56" style={{ margin: "0 0 6px" }}>{bike.name}</h1>
             <div className="text-mute" style={{ fontSize: 13 }}>{bike.year} · {bike.km.toLocaleString("es-ES")} km · {bike.color}</div>
           </div>
 
@@ -405,7 +405,7 @@ function Detail({ lang, bikeId, go }) {
       <div style={{ marginTop: 80 }}>
         <div className="kicker" style={{ marginBottom: 8 }}>{t.detail.related}</div>
         <h3 className="h-display" style={{ fontSize: 48, margin: "0 0 24px" }}>{lang === "ca" ? "També pot agradar-te" : "También te puede gustar"}</h3>
-        <div className="grid-bikes" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+        <div className="grid-bikes grid-bikes-3">
           {related.map(b => <BikeCard key={b.id} bike={b} onOpen={(id) => go("detail", id)} lang={lang} />)}
         </div>
       </div>
@@ -419,10 +419,10 @@ function Services({ lang, go }) {
   return (
     <>
       <section className="section">
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 48, alignItems: "center" }}>
+        <div className="sec-split sec-split-a">
           <div>
             <div className="kicker" style={{ marginBottom: 8 }}>{t.svc.kicker}</div>
-            <h1 className="h-display" style={{ fontSize: 96, margin: "0 0 18px", lineHeight: 0.85 }}>
+            <h1 className="h-display hd-96" style={{ margin: "0 0 18px", lineHeight: 0.85 }}>
               <span className="stroke">{t.svc.title.split(" ").slice(0, -1).join(" ")}</span><br />
               <span className="text-orange">{t.svc.title.split(" ").slice(-1)}</span>
             </h1>
@@ -444,7 +444,7 @@ function Services({ lang, go }) {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="kicker" style={{ marginBottom: 8 }}>{t.svc.pricesKick}</div>
-        <h2 className="h-display" style={{ fontSize: 56, margin: "0 0 24px" }}>{t.svc.pricesTitle}</h2>
+        <h2 className="h-display hd-56" style={{ margin: "0 0 24px" }}>{t.svc.pricesTitle}</h2>
         <div>
           {t.svc.prices.map(([n, b, p], i) => (
             <FadeIn key={i} delay={i * 60}>
@@ -478,11 +478,11 @@ function Contact({ lang }) {
     <section className="section">
       <div style={{ marginBottom: 32 }}>
         <div className="kicker" style={{ marginBottom: 8 }}>{lang === "ca" ? "Contacta" : "Contacta"}</div>
-        <h1 className="h-display" style={{ fontSize: 88, margin: 0 }}>{t.contact.title}</h1>
+        <h1 className="h-display hd-88" style={{ margin: 0 }}>{t.contact.title}</h1>
         <p className="text-mute" style={{ marginTop: 14, fontSize: 16, maxWidth: 600 }}>{t.contact.sub}</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40 }}>
+      <div className="sec-split sec-split-c">
         <div>
           <Img label="MAPA · Badalona · C/ Baldomer Solà 5" style={{ height: 320, borderRadius: 6, marginBottom: 16 }} />
           <div className="col gap-16" style={{ background: "var(--bg-2)", border: "1px solid var(--line)", borderRadius: 6, padding: 22 }}>
@@ -514,7 +514,7 @@ function Contact({ lang }) {
 
         {sent ? (
           <div style={{ background: "var(--bg-2)", border: "1px solid var(--orange)", borderRadius: 6, padding: 40, display: "grid", placeContent: "center", textAlign: "center" }}>
-            <div className="h-display text-orange" style={{ fontSize: 64, margin: "0 0 12px" }}>✓</div>
+            <div className="h-display text-orange hd-64" style={{ margin: "0 0 12px" }}>✓</div>
             <div className="h-display" style={{ fontSize: 32, margin: "0 0 8px" }}>{t.contact.sentTitle}</div>
             <p className="text-mute" style={{ fontSize: 14 }}>{t.contact.sentBody}</p>
           </div>
