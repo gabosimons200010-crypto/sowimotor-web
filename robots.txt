@@ -1,0 +1,4 @@
+# Vista previa privada, no es la web oficial de SowiMotor.
+# Accesible solo por enlace directo; no debe aparecer en buscadores.
+User-agent: *
+Disallow: /
